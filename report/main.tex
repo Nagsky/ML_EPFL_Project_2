@@ -94,11 +94,11 @@ We trained locally on one of our laptop with a recent GPU RTX 2060 laptop and 8G
 \begin{tabular}{l|c|c|c|c|c|c|c|c}
 \textbf{Name} & $p_{drop}$ & 45$^{\circ}$& flip  & Optim  & $f_1$ \\
 \hline
-U-Net Vanilla & 0.0 & X & X  & CrossEntropy & 0.72\\
-U-Net 2      & 0.2 & X & X  & CrossEntropy & 0.71\\
-U-Net 3     & 0.2 & \checkmark & \checkmark & CrossEntropy & 0.78\\
+U-Net Vanilla & 0.0 & X & X  & SGD & 0.72\\
+U-Net 2      & 0.2 & X & X  & SGD & 0.71\\
+U-Net 3     & 0.2 & \checkmark & \checkmark & SGD & 0.78\\
 U-Net 4     & 0.0 & \checkmark & \checkmark & Adam & 0.8\\
-Our best U-Net & 0.0 & \checkmark& \checkmark & CrossEntropy & 0.884\\
+Our best U-Net & 0.0 & \checkmark& \checkmark & SGD & 0.884\\
 
 \end{tabular}
 \caption {$\mathbf{p_{drop}}$: dropout probability, $\mathbf{45^{\circ}}$ : simple rotation, \textbf{flip} : simple flip, \textbf{Optim} : Optimizer used, $\mathbf{f_1}$ : Test-set $f_1$ score on AIcrowd}\label{tbl:results}

@@ -5,7 +5,6 @@ import numpy as np
 import torch
 import torch.nn as nn
 from sklearn.model_selection import train_test_split
-
 from src.runners import train_epoch, validate_epoch
 from src.utils import load_model, masks_to_submission, rotate45
 
@@ -37,7 +36,7 @@ if __name__ == "__main__":
                 ]
                 dataset_train += [
                     rotate45(mpimg.imread(f"training/images/satImage_{i:03}.png")).transpose(
-                        2, x, 1
+                        (2, x, 1)
                     )[:, ::y, ::z]
                     for i in range(1, 101)
                 ]
@@ -82,10 +81,10 @@ if __name__ == "__main__":
 
     # 1 image per batch actually
     dataset_training = [
-        [inputs_train[i][None], targets_train[i][None]] for i in range(len(inputs_train))
+        (inputs_train[i][None], targets_train[i][None]) for i in range(len(inputs_train))
     ]
     dataset_valid = [
-        [inputs_valid[i][None], targets_valid[i][None]] for i in range(len(inputs_valid))
+        (inputs_valid[i][None], targets_valid[i][None]) for i in range(len(inputs_valid))
     ]
 
     os.makedirs("unet_states/Unet", exist_ok=True)
@@ -100,7 +99,7 @@ if __name__ == "__main__":
     try:
         learning_rate = np.load(f"unet_states/Unet/lr_epoch_{epoch}.npy")[0]
     except FileNotFoundError:
-        learning_rate = np.load(f"unet_states/Unet/lr_epoch_0.npy")[0]  # 0.01
+        learning_rate = np.load("unet_states/Unet/lr_epoch_0.npy")[0]  # 0.01
     momentum = 0.9
     gamma = 0.95
     optim = torch.optim.SGD(model.parameters(), lr=learning_rate, momentum=momentum)

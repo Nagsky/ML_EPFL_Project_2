@@ -62,7 +62,7 @@ A convolution operation allows to retrieve a type of information on an image by 
 Moreover, we quickly noticed that with only the 100 basic images, the network quickly obtained an F1 of 96$\%$ on the training set and only 80\% on the valid set. We were cruelly short of images. We then significantly enriched our dataset by performing many 90° rotations and different flips of our images. With 800 images (including the 45° rotations), we already had a better ratio between training and validation.
 
 \subsection{45° Rotation}
-The use of the 45° rotation of the images was necessary in order to enrich our database, in particular by bringing many diagonal roads as we just explained. 
+The use of the 45° rotation of the images was necessary in order to enrich our database, in particular by bringing many diagonal roads as we just explained.
 As it is illustrated on the figure [\ref{fig:carrerotation}] below, by rotating the image in this way, edges appear at the 4 corners of the image in addition to losing the initial corners of the image which go out of the 400x400 frame.
 \FloatBarrier
 \begin{figure}[ht] \centering
@@ -123,7 +123,7 @@ We can analyse some predictions on our validation set compared to their targets,
     \label{fig:prediction}
 \end{figure}
 \FloatBarrier
-We can see that, on validation test, it's quite perfect, unless some complicated parts where the road is only moderately defined on land. We can then see some output for our testset that we have submitted, on figure [\ref{fig:prediction_test}] : 
+We can see that, on validation test, it's quite perfect, unless some complicated parts where the road is only moderately defined on land. We can then see some output for our testset that we have submitted, on figure [\ref{fig:prediction_test}] :
 \FloatBarrier
 \begin{figure}[ht] \centering
     \includegraphics[width=0.99\columnwidth]{figures/output_test.png}

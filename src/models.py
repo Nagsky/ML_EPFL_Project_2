@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
-
 from src import utils
 
 
@@ -12,7 +11,7 @@ class Unet(nn.Module):
     Use of batchnorm2d after Conv2d
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self.down_block1 = nn.Sequential(
@@ -110,7 +109,7 @@ class Unet(nn.Module):
             nn.Conv2d(64, 2, kernel_size=1),
         )
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         x1 = self.down_block1(x)
 
         x2 = self.down_block2(x1)
@@ -135,7 +134,18 @@ class Unet(nn.Module):
 
         return xup4
 
-    def visu(self, x, im1=0, im2=0, im3=0, im4=0, im_middle=0, imu1=0, imu2=0, imu3=0):
+    def visu(
+        self,
+        x: torch.Tensor,
+        im1: int = 0,
+        im2: int = 0,
+        im3: int = 0,
+        im4: int = 0,
+        im_middle: int = 0,
+        imu1: int = 0,
+        imu2: int = 0,
+        imu3: int = 0,
+    ) -> None:
         self.eval()
         with torch.no_grad():
             x1 = self.down_block1(x)
@@ -181,7 +191,7 @@ class UnetVanilla(nn.Module):
     Vanilla Unet as define in the paper : https://arxiv.org/pdf/1505.04597.pdf
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.down_block1 = nn.Sequential(
             # nn.Dropout2d(0.2),
@@ -278,7 +288,7 @@ class UnetVanilla(nn.Module):
             nn.Conv2d(64, 2, kernel_size=1),
         )
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         x1 = self.down_block1(x)
 
         x2 = self.down_block2(x1)

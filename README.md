@@ -1,6 +1,7 @@
 # Machine Learning CS-433 - Class Project 2 - Road Segmentation - EPFL
-We built and trained a Convolutional Neural Network in Pytorch to perform semantic segmentation of roads on satellite images.   
-We implemented a U-Net with padding inspired by [Ronneberger et al. (2015)](https://arxiv.org/pdf/1505.04597.pdf).   
+
+We built and trained a Convolutional Neural Network in Pytorch to perform semantic segmentation of roads on satellite images.
+We implemented a U-Net with padding inspired by [Ronneberger et al. (2015)](https://arxiv.org/pdf/1505.04597.pdf).
 We did Data augmentation by rotating (45, 90, 135, 180, 225, 270, 315) or flip image.
 
 Our submission files are saved in the folder [submissions](submissions/).
@@ -10,6 +11,7 @@ The train and evaluation contains [100 train images of size 400x400](training) a
 You can consult our [report](report/BRAZ_DURAND_NICOLLE_Project2_Road_Segmentation_ML_EPFL.pdf) for more details.
 
 ### Contributors
+
 - Lucas Braz [@LucasBrazCappelo](https://github.com/LucasBrazCappelo)
 - Clément Nicolle [@Clement-Nicolle](https://github.com/Clement-Nicolle)
 - Pierre-Alain Durand [@pierre-alain9](https://github.com/pierre-alain9)
@@ -23,6 +25,7 @@ See some of our results:
 ![](report/figures/output_test.png)
 
 ### Setup Environment
+
 We run on Windows 10 with Conda 4.11 (Python 3.8) installed and Pytorch 1.10. It should work with any 3.6+ Python version with pip.
 
 ```bash
@@ -41,7 +44,8 @@ pip3 install Pillow
 
 To generate our final AIcrowd submission execute:
 
-   ```bash
+```bash
 ./run.py
-   ```
+```
+
 It should take around 1 hour and half maximum with a recent GPU.

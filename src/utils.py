@@ -1,16 +1,17 @@
 import glob
-from typing import Union
+from typing import Generator, List, Optional, Tuple, Union, cast
 
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
+from matplotlib.axes._axes import Axes
 from PIL import Image
 from scipy import ndimage
-
 from src.models import Unet
+from src.runners import Dataset
 
 
-def imshow(img, ax=None):
+def imshow(img: Union[torch.Tensor, np.ndarray], ax: Optional[Axes] = None) -> None:
     """
     displays an image with matplotlib directly from Pytorch format : Channel*H*W
     with figsize 7inch² and without axes
@@ -30,13 +31,13 @@ def imshow(img, ax=None):
         fig.axes.get_yaxis().set_visible(False)
 
 
-def img_float_to_uint8(img):
+def img_float_to_uint8(img: np.ndarray) -> np.ndarray:
     rimg = img - np.min(img)
     rimg = (rimg / np.max(rimg) * 255).round().astype(np.uint8)
     return rimg
 
 
-def make_img_overlay(img, predicted_img):
+def make_img_overlay(img: np.ndarray, predicted_img: np.ndarray) -> Image.Image:
     w = img.shape[0]
     h = img.shape[1]
     color_mask = np.zeros((w, h, 3), dtype=np.uint8)
@@ -49,11 +50,13 @@ def make_img_overlay(img, predicted_img):
     return new_img
 
 
-def imshow_overlay_test(img_to_show, dataset_test, imgs):
-    """
-    Show chosen images from the test dataset with the model prediction overlayed on it
-    """
-    img_to_show = (img_to_show,) if isinstance(img_to_show, int) else img_to_show
+def imshow_overlay_test(
+    img_to_show: Union[int, List[int]],
+    dataset_test: List[torch.Tensor],
+    imgs: List[Union[torch.Tensor, np.ndarray]],
+) -> None:
+    """Show chosen images from the test dataset with the model prediction overlaid on it."""
+    img_to_show = [img_to_show] if isinstance(img_to_show, int) else img_to_show
     fig, ax = plt.subplots(
         len(img_to_show) // 2 + len(img_to_show) % 2,
         2,
@@ -72,11 +75,14 @@ def imshow_overlay_test(img_to_show, dataset_test, imgs):
         ax[len(img_to_show)].get_yaxis().set_visible(False)
 
 
-def imshow_overlay_validation(img_to_show, dataset_valid, model, device):
-    """
-    Show chosen images from validation dataset with the ground truth overlayed on it on right
-    Show chosen images from validation dataset with the model prediction overlayed on it on right
-    """
+def imshow_overlay_validation(
+    img_to_show: Union[int, List[int]],
+    dataset_valid: Dataset,
+    model: torch.nn.Module,
+    device: torch.device,
+) -> None:
+    """Show chosen images from validation dataset with the ground truth overlaid on it on right Show
+    chosen images from validation dataset with the model prediction overlaid on it on right."""
     img_to_show = (img_to_show,) if isinstance(img_to_show, int) else img_to_show
     fig, ax = plt.subplots(len(img_to_show), 2, figsize=(15, 8 * len(img_to_show)))
     ax = ax.flatten()
@@ -100,7 +106,7 @@ def imshow_overlay_validation(img_to_show, dataset_valid, model, device):
         ax[2 * idx + 1].set_title(f"Image {img} : prediction")
 
 
-def rotate45(img):
+def rotate45(img: np.ndarray) -> np.ndarray:
     """
     input: image (400*400*3)
     output: 45° rotated image (272*272*3)
@@ -115,17 +121,17 @@ def rotate45(img):
         y, x, _ = img.shape
         start_x = x // 2 - (crop_x // 2)
         start_y = y // 2 - (crop_y // 2)
-        img = img[start_y: start_y + crop_y, start_x: start_x + crop_x, :]
+        img = img[start_y : start_y + crop_y, start_x : start_x + crop_x, :]
     else:
         y, x = img.shape
         start_x = x // 2 - (crop_x // 2)
         start_y = y // 2 - (crop_y // 2)
-        img = img[start_y: start_y + crop_y, start_x: start_x + crop_x]
+        img = img[start_y : start_y + crop_y, start_x : start_x + crop_x]
 
     return img
 
 
-def patch_to_label(patch, foreground_threshold):
+def patch_to_label(patch: np.ndarray, foreground_threshold: float) -> int:
     df = np.mean(patch)
     if df > foreground_threshold:
         return 1
@@ -133,47 +139,51 @@ def patch_to_label(patch, foreground_threshold):
         return 0
 
 
-def mask_to_submission_strings(nb, imgs, foreground_threshold):
-    """Reads a single image and outputs the strings that should go into the submission file"""
+def mask_to_submission_strings(
+    nb: int, imgs: List[np.ndarray], foreground_threshold: float
+) -> Generator[str, None, None]:
+    """Reads a single image and outputs the strings that should go into the submission file."""
     im = imgs[nb]
     img_number = nb + 1
     patch_size = 16
     for j in range(0, im.shape[1], patch_size):
         for i in range(0, im.shape[0], patch_size):
-            patch = im[i: i + patch_size, j: j + patch_size]
+            patch = im[i : i + patch_size, j : j + patch_size]
             label = patch_to_label(patch, foreground_threshold=foreground_threshold)
-            yield "{:03d}_{}_{},{}".format(img_number, j, i, label)
+            yield f"{img_number:03d}_{j}_{i},{label}"
 
 
-def masks_to_submission(submission_filename, imgs, foreground_threshold):
-    """Converts images into a submission file"""
+def masks_to_submission(
+    submission_filename: str, imgs: List[np.ndarray], foreground_threshold: float
+) -> None:
+    """Converts images into a submission file."""
     with open(submission_filename, "w") as f:
         f.write("id,prediction\n")
         for i in range(len(imgs)):
             f.writelines(
-                "{}\n".format(s)
+                f"{s}\n"
                 for s in mask_to_submission_strings(
                     i, imgs, foreground_threshold=foreground_threshold
                 )
             )
 
 
-def load_model(epoch: Union[int, str] = "latest"):
+def load_model(epoch: Union[int, str] = "latest") -> Tuple[torch.nn.Module, int]:
     model = Unet()
     model_states = glob.glob("unet_states/Unet/*.pth")
-    if len(model_states) and (epoch == "latest" or epoch > 0):
-        model_states = [int(m[17:-4]) for m in model_states]
+    if len(model_states) and (epoch == "latest" or cast(int, epoch) > 0):
+        model_states_int = [int(m[17:-4]) for m in model_states]
         if epoch == "latest":
-            epoch = max(model_states)
+            epoch = max(model_states_int)
         state_dict = torch.load(open(f"unet_states/Unet/{epoch}.pth", "rb"), map_location="cpu")
         model.load_state_dict(state_dict)
     else:
         # fresh model
         epoch = 0
-    return model, epoch
+    return model, cast(int, epoch)
 
 
-def save_model(model, epoch, str_output):
-    torch.save(model.state_dict(), open(f'unet_states/Unet/{epoch}.pth', 'wb'))
-    with open(f'unet_states/Unet/{epoch}.txt', 'w') as file:  # Use file to refer to the file object
+def save_model(model: torch.nn.Module, epoch: int, str_output: str) -> None:
+    torch.save(model.state_dict(), open(f"unet_states/Unet/{epoch}.pth", "wb"))
+    with open(f"unet_states/Unet/{epoch}.txt", "w") as file:  # Use file to refer to the file object
         file.write(str_output)

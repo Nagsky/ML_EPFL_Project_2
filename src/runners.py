@@ -1,11 +1,20 @@
-from typing import cast
+from typing import List, Tuple, cast
 
 import torch
+import torch.nn as nn
 from sklearn.metrics import f1_score
 from tqdm import trange
 
+Dataset = List[Tuple[torch.Tensor, torch.Tensor]]
 
-def train_epoch(data_loader, model, optimiser, device, criterion):
+
+def train_epoch(
+    data_loader: Dataset,
+    model: nn.Module,
+    optimiser: torch.optim.optimizer.Optimizer,
+    device: torch.device,
+    criterion: nn.Module,
+) -> Tuple[nn.Module, float, float, float]:
     # set model to training mode. This is important because some layers behave differently during
     # training and testing
     model = model.train(True)
@@ -64,7 +73,9 @@ def train_epoch(data_loader, model, optimiser, device, criterion):
     return model, loss_total, f1_total, oa_total
 
 
-def validate_epoch(data_loader, model, device, criterion):
+def validate_epoch(
+    data_loader: Dataset, model: nn.Module, device: torch.device, criterion: nn.Module
+) -> Tuple[float, float, float]:
     # set model to evaluation mode
     model = model.train(False)
     model = model.to(device)  # (if not already do)

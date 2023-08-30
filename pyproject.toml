@@ -1,0 +1,90 @@
+[tool.poetry]
+name = "MLproject2"
+version = "0.1.0"
+description = "Semantic segmentation of roads on satellite images using a U-Net"
+authors = ["Lucas Braz <lucas.braz@cpe.fr>"]
+license = "Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/LucasBrazCappelo/MLproject2"
+packages = [{ include = "MLproject2", from = "."}]
+classifiers=[
+    "Natural Language :: English",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+glob = "*"
+matplotlib = "*"
+numpy = "^1.24.3
+PIL = "*"
+scipy = "*"
+skimage = "*"
+sklearn = "*"
+torch = "^1.10.0"
+tqdm = "^4.65.0"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "2.20.0"
+isort = "==5.12.0"
+black = "==23.3.0"
+flake8 = "==6.0.0"
+flake8-docstrings = "==1.7.0"
+pyupgrade = "==v3.3.1"
+docformatter = "==v1.4"
+bandit = "==1.7.5"
+shellcheck-py = "==v0.9.0.5"
+mdformat = "==0.7.16"
+codespell = "==v2.2.5"
+nbstripout = "==0.6.1"
+nbQA = "==1.7.0"
+pytest = "==7.4"
+
+[tool.pytest.ini_options]
+addopts = [
+  "--color=yes",
+  "--durations=0",
+  "--strict-markers",
+  "--doctest-modules",
+]
+filterwarnings = [
+  "ignore::DeprecationWarning",
+  "ignore::UserWarning",
+]
+log_cli = "True"
+markers = [
+  "unit: test a single piece of the system in isolation",
+  "integration: test that different pieces of the system work together",
+  "functional: test a whole system end-to-end",
+  "speed: test for running speed",
+]
+minversion = "6.0"
+testpaths = "tests/"
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: nocover",
+    "raise NotImplementedError",
+    "raise NotImplementedError()",
+    "if __name__ == .__main__.:",
+]
+
+[tool.black]
+line-length = 100
+exclude = "(.eggs|.git|.hg|.mypy_cache|.nox|.tox|.venv|.svn|_build|buck-out|build|dist)"
+
+[tool.isort]
+profile = "black"
+line_length = 100
+src_paths = ["ascent"]
+
+[tool.bandit]
+exclude_dirs = ["tests"]
+skips = ["B301"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

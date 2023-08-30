@@ -79,7 +79,7 @@ exclude = "(.eggs|.git|.hg|.mypy_cache|.nox|.tox|.venv|.svn|_build|buck-out|buil
 [tool.isort]
 profile = "black"
 line_length = 100
-src_paths = ["ascent"]
+src_paths = ["src"]
 
 [tool.bandit]
 exclude_dirs = ["tests"]

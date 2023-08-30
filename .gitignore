@@ -144,8 +144,6 @@ dmypy.json
 *.tar
 *.tar.gz
 
-# Lightning-Hydra-Template
-ascent/configs/local/default.yaml
 /data/
 /logs/
 .env
